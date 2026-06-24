@@ -3,10 +3,14 @@ const colorbarImage = document.querySelector("#colorbarImage");
 const colorbarCaption = document.querySelector("#colorbarCaption");
 const attributionRows = document.querySelector("#attributionRows");
 const evaluationTables = document.querySelector("#evaluationTables");
-const dataUrl = "assets/data/project-data.json?v=20260618-egoseo-project";
+const dataUrl = "assets/data/project-data.json?v=20260624-percentile-5p0-colorbar";
 
 function fmtScore(value) {
   return Number.isFinite(value) ? value.toFixed(2) : "N/A";
+}
+
+function fmtPercentile(value) {
+  return Number.isFinite(value) ? value.toLocaleString("en-US", { maximumFractionDigits: 1 }) : "N/A";
 }
 
 function fmtPercent(value) {
@@ -186,7 +190,10 @@ fetch(dataUrl)
   .then(response => response.json())
   .then(data => {
     colorbarImage.src = data.spectrogram.colorbar;
-    colorbarCaption.textContent = `${data.spectrogram.db_min} to ${data.spectrogram.db_max} dBFS`;
+    const cut = data.spectrogram.percentile_cut;
+    colorbarCaption.textContent = Number.isFinite(cut)
+      ? `${fmtPercentile(cut)}% tile to ${fmtPercentile(100 - cut)}% tile`
+      : `${data.spectrogram.db_min} to ${data.spectrogram.db_max} dBFS`;
     const sections = data.sections || [{ title: "Audio Examples", samples: data.samples || [] }];
     evaluationTables.replaceChildren(...(data.summary_tables || []).map(summaryTableNode));
     samplesRoot.replaceChildren(...demoSectionsNode(sections));

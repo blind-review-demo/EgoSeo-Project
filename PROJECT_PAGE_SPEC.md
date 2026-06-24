@@ -122,13 +122,13 @@ Spectrogram settings are defined only in `src/config.py`:
 
 Current settings:
 
-- dB range: `-70 dB` to `-30 dB`
+- color limits: per-example mixture spectrogram `5%` to `95%` percentile
 - colormap: `jet`
 - x-axis unit: `sec`
 - y-axis unit: `kHz`
 - axis label and tick text is kept compact but readable for embedded images
 
-The spectrogram dB reference is amplitude `1.0`.
+The same percentile-derived limits are used for mixture, ego-noise, target, and all method outputs in each example.
 
 A single shared colorbar is placed near the top of the page.
 

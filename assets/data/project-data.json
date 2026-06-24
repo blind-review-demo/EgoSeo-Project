@@ -1,10 +1,10 @@
 {
   "title": "Learning to Hear While Walking",
   "spectrogram": {
-    "db_min": -70.0,
-    "db_max": -30.0,
-    "reference": "amplitude 1.0",
-    "colorbar": "assets/spectrogram_colorbar.png"
+    "scale": "mixture_percentile",
+    "percentile_cut": 5.0,
+    "reference": "per-example mixture spectrogram",
+    "colorbar": "assets/spectrogram_colorbar.png?v=percentile-5p0"
   },
   "sections": [
     {
