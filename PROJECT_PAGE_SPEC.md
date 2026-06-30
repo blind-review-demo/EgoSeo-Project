@@ -4,7 +4,7 @@
 
 This static page presents overall evaluation tables and audio-only examples for
 the EgoSep experiment.
-It is intended for GitHub Pages deployment from `docs/`.
+It is intended for GitHub Pages deployment from the repository root.
 
 Overall evaluation tables report method-level means by robot and SNR, omit
 `clean_only`, round displayed values to two decimals, and bold the best value in
@@ -26,17 +26,15 @@ The paths are defined in `src/config.py` as
 
 ## Generated Files
 
-The builder writes:
+The builder writes or refreshes:
 
-- `docs/index.html`
-- `docs/style.css`
-- `docs/script.js`
-- `docs/assets/data/project-data.json`
-- `docs/assets/spectrogram_colorbar.png`
-- `docs/assets/audio/<sample_id>/*.wav`
-- `docs/assets/audio/<sample_id>/*.png`
+- `assets/data/project-data.json`
+- `assets/spectrogram_colorbar.png`
+- `assets/audio/<sample_id>/*.wav`
+- `assets/audio/<sample_id>/*.png`
 
-`docs/` is the GitHub Pages publish directory.
+The repository root contains the static page shell (`index.html`, `style.css`, and
+`script.js`) and is the GitHub Pages publish directory.
 
 ## Audio Example Set Layout
 
@@ -72,7 +70,7 @@ Each method output also displays:
 
 ## Sample Selection
 
-The builder selects `PROJECT_PAGE_SAMPLE_COUNT` sets.
+The builder selects `ProjectPage.sample_count` sets.
 
 Selection is automatic and prioritizes samples where:
 
@@ -97,15 +95,15 @@ The current order is sorted by:
 3. `Normal`, then `Anomaly`
 
 If more samples are needed than the number of buckets, the rotation repeats.
-With the current `PROJECT_PAGE_SAMPLE_COUNT = 36`, each of the 12
-`robot x SNR x Ground Truth` buckets appears three times when enough
+With the current `ProjectPage.sample_count = 48`, each of the 12
+`robot x SNR x Ground Truth` buckets appears four times when enough
 candidates exist.
 
 ## Audio Scale
 
 Audio files keep the source scale when they are materialized for the project page.
 
-The builder loads each source track and writes it to `docs/assets/audio/`
+The builder loads each source track and writes it to `assets/audio/`
 without peak normalization or any other amplitude scaling.
 
 ## Spectrograms
@@ -114,11 +112,10 @@ Every playable audio file has one spectrogram image directly above it.
 
 Spectrogram settings are defined only in `src/config.py`:
 
-- `PROJECT_PAGE_SPECTROGRAM_N_FFT`
-- `PROJECT_PAGE_SPECTROGRAM_HOP_LENGTH`
-- `PROJECT_PAGE_SPECTROGRAM_DB_MIN`
-- `PROJECT_PAGE_SPECTROGRAM_DB_MAX`
-- `PROJECT_PAGE_SPECTROGRAM_CMAP`
+- `ProjectPage.spectrogram_n_fft`
+- `ProjectPage.spectrogram_hop_length`
+- `ProjectPage.spectrogram_percentile_cut`
+- `ProjectPage.spectrogram_cmap`
 
 Current settings:
 
@@ -153,7 +150,7 @@ This regenerates:
 Run:
 
 ```bash
-/home/koki/miniconda3/envs/sam-audio-new/bin/python -m http.server 8000 --directory docs
+/home/koki/miniconda3/envs/sam-audio-new/bin/python -m http.server 8000 --directory /home/koki/OneDrive/ProgramsNew/25-EgoSepProjPage
 ```
 
 Open:

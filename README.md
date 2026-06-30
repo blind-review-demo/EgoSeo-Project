@@ -4,7 +4,7 @@ Static audio project page for EgoSep.
 
 Public page:
 
-https://blind-review-demo.github.io/EgoSeo-Project/
+https://blind-review-demo.github.io/EgoSep-Project/
 
 Open `index.html` through GitHub Pages or a local static server.
 
