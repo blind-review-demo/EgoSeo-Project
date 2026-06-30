@@ -43,40 +43,39 @@
           <h2 id="methodTitle">Proposed Method</h2>
         </div>
         <figure class="method-figure">
-          <img src="Method/EgoNoiseSeparationProcess.png" alt="Overview of the ego-noise separator" />
+          <img src="Method/PAENM.png" alt="Prompt-Anchored Ego-Noise Mining overview" />
           <figcaption>
-            <strong>Overview of the ego-noise separator.</strong> First, the VAE encoder maps audio to a
-            low-frame-rate latent representation. Adapt-DiT, described below, predicts a velocity field
-            that moves the latent representation h of ego-noise-contaminated audio toward the latent
-            representation of clean audio. Finally, the clean VAE decoder converts the clean latent
-            representation back to a waveform.
+            <strong>Prompt-Anchored Ego-Noise Mining (PEM) overview.</strong> Recordings collected
+            during robot operation are divided into several-second audio clips, and a natural-language
+            prompt describes the target ego-noise. Neural networks trained with contrastive learning
+            convert the audio clips and prompt into a shared embedding space where semantically similar
+            sounds and text are mapped nearby. PCA reduces unnecessary variations, HDBSCAN groups clips
+            with similar audio content, and the text embedding is used as an anchor to automatically
+            select the ego-noise-dominant cluster.
           </figcaption>
         </figure>
         <figure class="method-figure">
-          <img src="Method/ArchitectureofAdapt-DiT.png" alt="Architecture of Adapt-DiT" />
+          <img src="Method/over_arch.png" alt="Latent-space Flow Matching procedure for ego-noise separation" />
           <figcaption>
-            <strong>Architecture of Adaptive Diffusion Transformer (Adapt-DiT).</strong> Adapt-DiT builds
-            on a DiT trained to separate text-specified sounds and efficiently adapts it to the fixed
-            task of ego-noise separation. Conditioned on the latent representation of mixture audio,
-            Adapt-DiT predicts a velocity field from Gaussian noise toward the clean audio latent
-            representation.
+            <strong>Latent-space Flow Matching procedure for ego-noise separation.</strong> The
+            mixture waveform is first converted into a quantized latent representation by a frozen VAE
+            encoder. Transfer-DiT estimates a velocity field <em>v</em>(&tau;) at flow time &tau; that
+            transforms an initial latent <em>h</em>(&tau; = 0) into the environmental-sound latent
+            <em>h</em>(&tau; = 1). The obtained latent is decoded by the VAE decoder to reconstruct the
+            separated waveform while preserving open-set environmental sounds.
           </figcaption>
         </figure>
         <figure class="method-figure">
-          <img src="Method/AudioLanguageAlignedClustering.png" alt="Prompt-anchered ego-noise mining" />
+          <img src="Method/transfer-dit.png" alt="Transfer-DiT architecture" />
           <figcaption>
-            <strong>Prompt-Anchered Ego-Noise Mining.</strong> Robot recordings are first split into
-            short audio clips. A pretrained VAE encoder and Transformer encoder map each clip to a
-            latent representation so semantic similarity between clips can be measured. A pretrained
-            ModernBERT text encoder maps ego-noise prompts to the same embedding space. Because the
-            audio and text encoders are aligned, sounds and text with the same meaning are mapped to
-            nearby vectors. The embeddings are then passed through Principal Component Analysis (PCA)
-            to reduce factors other than whether a clip contains only ego-noise or also includes
-            environmental sound. Hierarchical Density-Based Spatial Clustering of Applications with
-            Noise (HDBSCAN), which is robust to imbalanced cluster sizes, groups semantically similar
-            sounds. The cluster closest to the text-prompt embedding is selected as the ego-noise-only
-            cluster. This framework automatically mines ego-noise-only clips from ego-noise recordings
-            that may contain environmental sounds.
+            <strong>Transfer-DiT architecture.</strong> Transfer-DiT adapts the pretrained DiT
+            backbone of a general-purpose zero-shot audio separator to robot-specific ego-noise
+            separation. The original target-conditioning modules, such as the text encoder and
+            cross-attention layers, are removed. Lightweight trainable BAL and LoRA modules are then
+            introduced for parameter-efficient adaptation. Given the interpolated latent representation
+            <em>h</em>(&tau;), the mixture latent <em>h</em><sub>mix</sub>, and the flow time &tau;, the
+            model predicts the velocity field <em>v</em>(&tau;) toward the ego-noise-free
+            environmental-sound latent.
           </figcaption>
         </figure>
         <figure class="method-figure">

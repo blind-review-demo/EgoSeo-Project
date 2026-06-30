@@ -118,11 +118,11 @@ function demoSectionsNode(sections) {
 }
 
 function metricValueNode(metric) {
-  if (typeof metric.value !== "number") {
+  if (!Number.isFinite(metric.value)) {
     return `<span class="metric-value is-empty">N/A</span>`;
   }
   const value = fmtScore(metric.value);
-  const content = metric.best ? `<strong>${value}</strong>` : value;
+  const content = metric.bestByRoundedValue ? `<strong>${value}</strong>` : value;
   return `<span class="metric-value"><span>${metric.label}:</span> ${content}</span>`;
 }
 
@@ -137,6 +137,38 @@ function summaryTableNode(table) {
     if (a.label !== "Ours" && b.label === "Ours") return -1;
     return 0;
   });
+  const roundedBestByColumn = (table.columns || []).map((_, columnIndex) => {
+    const bestByMetric = new Map();
+    rows.forEach(row => {
+      const cell = row.cells?.[columnIndex];
+      (cell?.metrics || []).forEach(metric => {
+        if (!Number.isFinite(metric.value)) return;
+        const metricKey = metric.metric || metric.label;
+        const roundedValue = Number(fmtScore(metric.value));
+        const currentBest = bestByMetric.get(metricKey);
+        if (currentBest === undefined || roundedValue > currentBest) {
+          bestByMetric.set(metricKey, roundedValue);
+        }
+      });
+    });
+    return bestByMetric;
+  });
+  const rowsWithRoundedBest = rows.map(row => ({
+    ...row,
+    cells: (row.cells || []).map((cell, columnIndex) => ({
+      ...cell,
+      metrics: (cell.metrics || []).map(metric => {
+        if (!Number.isFinite(metric.value)) return metric;
+        const metricKey = metric.metric || metric.label;
+        const roundedValue = Number(fmtScore(metric.value));
+        const bestValue = roundedBestByColumn[columnIndex]?.get(metricKey);
+        return {
+          ...metric,
+          bestByRoundedValue: bestValue !== undefined && roundedValue === bestValue,
+        };
+      }),
+    })),
+  }));
   const metricDescription =
     table.kind === "separation"
       ? `<p class="summary-table__description">
@@ -157,7 +189,7 @@ function summaryTableNode(table) {
           </tr>
         </thead>
         <tbody>
-          ${rows
+          ${rowsWithRoundedBest
             .map(row => `
               <tr>
                 <th>${row.label}</th>
